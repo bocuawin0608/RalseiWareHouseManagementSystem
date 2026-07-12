@@ -1,0 +1,13 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace RalseiWarehouse.Models;
+
+public partial class Role
+{
+    public int RoleId { get; set; }
+
+    public string? DisplayName { get; set; }
+
+    public virtual ICollection<User> Users { get; set; } = new List<User>();
+}
