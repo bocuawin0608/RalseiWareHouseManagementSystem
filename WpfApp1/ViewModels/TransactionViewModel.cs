@@ -11,21 +11,22 @@ namespace RalseiWarehouse.ViewModels;
 public partial class TransactionViewModel(IWarehouseService service) : ViewModelBase
 {
     public ObservableCollection<Product> Products { get; } = []; public ObservableCollection<Customer> Customers { get; } = []; public ObservableCollection<InputLineViewModel> InputLines { get; } = []; public ObservableCollection<OutputLineViewModel> OutputLines { get; } = [];
+    public ObservableCollection<Input> RecentImports { get; } = []; public ObservableCollection<Output> RecentExports { get; } = [];
     [ObservableProperty] private Customer? selectedCustomer;
-    /// <summary>Loads product and customer choices.</summary>
-    [RelayCommand] public async Task LoadAsync() => await ExecuteAsync(async () => { Replace(Products, await service.GetProductsAsync()); Replace(Customers, await service.GetCustomersAsync()); });
+    /// <summary>Loads products, customers, and transaction history.</summary>
+    [RelayCommand] public async Task LoadAsync() => await ExecuteAsync(async () => { Replace(Products, await service.GetProductsAsync()); Replace(Customers, await service.GetCustomersAsync()); Replace(RecentImports, await service.GetRecentImportsAsync()); Replace(RecentExports, await service.GetRecentExportsAsync()); });
     /// <summary>Adds an import line editor.</summary>
-    [RelayCommand] private void AddInput() => InputLines.Add(new());
+    [RelayCommand] private void AddInput() { InputLines.Add(new()); Message = "Select a product and enter quantity/prices."; }
     /// <summary>Removes an import line editor.</summary>
     [RelayCommand] private void RemoveInput(InputLineViewModel? line) { if (line is not null) InputLines.Remove(line); }
     /// <summary>Commits one import receipt.</summary>
-    [RelayCommand] private Task SaveInputAsync() => ExecuteAsync(async () => { await service.CreateInputAsync(InputLines.Select(x => new InputRequest(x.Product?.Id ?? "", x.Count, x.InputPrice, x.OutputPrice))); InputLines.Clear(); Message = "Import completed."; });
+    [RelayCommand] private Task SaveInputAsync() => ExecuteAsync(async () => { await service.CreateInputAsync(InputLines.Select(x => new InputRequest(x.Product?.Id ?? "", x.Count, x.InputPrice, x.OutputPrice))); InputLines.Clear(); Replace(RecentImports, await service.GetRecentImportsAsync()); Message = "Import saved. See History tab."; });
     /// <summary>Adds an export line editor.</summary>
-    [RelayCommand] private void AddOutput() => OutputLines.Add(new());
+    [RelayCommand] private void AddOutput() { OutputLines.Add(new()); Message = "Select a product and enter quantity."; }
     /// <summary>Removes an export line editor.</summary>
     [RelayCommand] private void RemoveOutput(OutputLineViewModel? line) { if (line is not null) OutputLines.Remove(line); }
     /// <summary>Validates stock and commits one export receipt.</summary>
-    [RelayCommand] private Task SaveOutputAsync() => ExecuteAsync(async () => { await service.CreateOutputAsync(SelectedCustomer?.CustomerId ?? 0, OutputLines.Select(x => new OutputRequest(x.Product?.Id ?? "", x.Count))); OutputLines.Clear(); Message = "Export completed."; });
+    [RelayCommand] private Task SaveOutputAsync() => ExecuteAsync(async () => { await service.CreateOutputAsync(SelectedCustomer?.CustomerId ?? 0, OutputLines.Select(x => new OutputRequest(x.Product?.Id ?? "", x.Count))); OutputLines.Clear(); Replace(RecentExports, await service.GetRecentExportsAsync()); Message = "Export saved. See History tab."; });
 }
 
 /// <summary>An editable import line.</summary>

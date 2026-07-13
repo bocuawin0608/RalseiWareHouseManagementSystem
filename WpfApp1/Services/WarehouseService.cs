@@ -61,6 +61,10 @@ public interface IWarehouseService
     Task CreateOutputAsync(int customerId, IEnumerable<OutputRequest> lines);
     /// <summary>Loads derived inventory.</summary>
     Task<List<InventoryRow>> GetInventoryAsync(string? search);
+    /// <summary>Loads recent imports with line items.</summary>
+    Task<List<Input>> GetRecentImportsAsync();
+    /// <summary>Loads recent exports with line items.</summary>
+    Task<List<Output>> GetRecentExportsAsync();
 }
 
 /// <summary>Uses EF Core DbContext instances directly for warehouse use cases.</summary>
@@ -135,12 +139,19 @@ public sealed class WarehouseService(IDbContextFactory<WarehouseDbContext> facto
         var header = new Output { OutputId = NewId("OUT"), DateOutput = DateTime.Now }; header.OutputInfos = values.Select(x => new OutputInfo { Id = Guid.NewGuid().ToString("N"), ObjectId = x.ProductId, CustomerId = customerId, Count = x.Count, Status = "Completed" }).ToList(); db.Outputs.Add(header); await db.SaveChangesAsync(); await transaction.CommitAsync();
     }
 
+    /// <summary>Loads recent imports with line items.</summary>
+    public async Task<List<Input>> GetRecentImportsAsync() { await using var db = await factory.CreateDbContextAsync(); return await db.Inputs.Include(x => x.InputInfos).ThenInclude(x => x.Object).OrderByDescending(x => x.DateInput).Take(50).ToListAsync(); }
+    /// <summary>Loads recent exports with line items.</summary>
+    public async Task<List<Output>> GetRecentExportsAsync() { await using var db = await factory.CreateDbContextAsync(); return await db.Outputs.Include(x => x.OutputInfos).ThenInclude(x => x.Object).OrderByDescending(x => x.DateOutput).Take(50).ToListAsync(); }
     /// <summary>Computes stock from the immutable import/export ledger.</summary>
     public async Task<List<InventoryRow>> GetInventoryAsync(string? search)
     {
         EnsureManager();
-        await using var db = await factory.CreateDbContextAsync(); var query = db.Objects.AsNoTracking(); if (!string.IsNullOrWhiteSpace(search)) query = query.Where(x => x.Id.Contains(search) || (x.DisplayName ?? "").Contains(search));
-        return await query.Select(x => new InventoryRow(x.Id, x.DisplayName ?? "", x.Unit.DisplayName ?? "", x.Supplier.DisplayName ?? "", x.InputInfos.Sum(i => (int?)i.Count) ?? 0, x.OutputInfos.Sum(o => (int?)o.Count) ?? 0, (x.InputInfos.Sum(i => (int?)i.Count) ?? 0) - (x.OutputInfos.Sum(o => (int?)o.Count) ?? 0))).OrderBy(x => x.Product).ToListAsync();
+        await using var db = await factory.CreateDbContextAsync();
+        IQueryable<Object> query = db.Objects.AsNoTracking().Include(x => x.Unit).Include(x => x.Supplier);
+        if (!string.IsNullOrWhiteSpace(search)) query = query.Where(x => x.Id.Contains(search) || (x.DisplayName ?? "").Contains(search));
+        var data = await query.Select(x => new { x.Id, x.DisplayName, Unit = x.Unit.DisplayName ?? "", Supplier = x.Supplier.DisplayName ?? "", Input = x.InputInfos.Sum(i => (int?)i.Count) ?? 0, Output = x.OutputInfos.Sum(o => (int?)o.Count) ?? 0 }).OrderBy(x => x.DisplayName).ToListAsync();
+        return data.Select(x => new InventoryRow(x.Id, x.DisplayName ?? "", x.Unit, x.Supplier, x.Input, x.Output, x.Input - x.Output)).ToList();
     }
 
     /// <summary>Persists a master-data entity.</summary>
