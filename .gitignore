@@ -1,7 +1,18 @@
-# Object file
-*.o
+# .NET build output
+bin/
+obj/
+*.user
+*.suo
+*.DotSettings.user
 
-# Ada Library Information
-*.ali
+# Visual Studio
+.vs/
+*.sln.docstates
 
-.vs
+# NuGet packages
+packages/
+*.nupkg
+
+# OS files
+Thumbs.db
+.DS_Store
