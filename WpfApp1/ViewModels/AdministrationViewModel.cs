@@ -12,13 +12,13 @@ public partial class AdministrationViewModel(IWarehouseService service) : ViewMo
  /// <summary>Loads roles and users.</summary>
  [RelayCommand] public Task LoadAsync()=>ExecuteAsync(RefreshAsync);
  /// <summary>Starts a role.</summary>
- [RelayCommand] private void NewRole()=>SelectedRole=new();
+ [RelayCommand] private void NewRole(){SelectedRole=new();Message="Fill in the fields and click Save.";}
  /// <summary>Saves the role.</summary>
  [RelayCommand] private Task SaveRoleAsync()=>WriteAsync(()=>service.SaveRoleAsync(SelectedRole??throw Select()));
  /// <summary>Deletes the role.</summary>
  [RelayCommand] private Task DeleteRoleAsync()=>WriteAsync(()=>service.DeleteRoleAsync((SelectedRole??throw Select()).RoleId));
  /// <summary>Starts a user.</summary>
- [RelayCommand] private void NewUser(){SelectedUser=new();NewPassword="";}
+ [RelayCommand] private void NewUser(){SelectedUser=new();NewPassword="";Message="Fill in the fields and click Save.";}
  /// <summary>Saves the user.</summary>
  [RelayCommand] private Task SaveUserAsync()=>WriteAsync(()=>service.SaveUserAsync(SelectedUser??throw Select(),NewPassword));
  /// <summary>Deletes the user.</summary>
