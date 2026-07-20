@@ -12,6 +12,12 @@ public partial class WarehouseDbContext : DbContext
     {
     }
 
+    public WarehouseDbContext(string connectionString)
+        : base(new DbContextOptionsBuilder<WarehouseDbContext>()
+              .UseSqlServer(connectionString).Options)
+    {
+    }
+
     public virtual DbSet<Customer> Customers { get; set; }
 
     public virtual DbSet<Input> Inputs { get; set; }
