@@ -44,36 +44,12 @@ public class WarehouseService
     private WarehouseDbContext CreateDb() => new(_connectionString);
 
     /// <summary>
-    /// Ensures the database exists and seeds default roles and users if empty.
+    /// Ensures the database schema exists without deleting existing data.
     /// </summary>
     public async Task EnsureDatabaseAsync()
     {
         await using var db = CreateDb();
-        try
-        {
-            _ = await db.Users.AnyAsync();
-        }
-        catch
-        {
-            await db.Database.EnsureDeletedAsync();
-        }
         await db.Database.EnsureCreatedAsync();
-
-        if (!await db.Roles.AnyAsync())
-        {
-            db.Roles.Add(new Role { DisplayName = "Admin" });
-            db.Roles.Add(new Role { DisplayName = "Staff" });
-            await db.SaveChangesAsync();
-        }
-
-        if (!await db.Users.AnyAsync())
-        {
-            var adminRole = await db.Roles.FirstAsync(r => r.DisplayName == "Admin");
-            var staffRole = await db.Roles.FirstAsync(r => r.DisplayName == "Staff");
-            db.Users.Add(new User { UserName = "admin", Password = "admin", DisplayName = "Administrator", RoleId = adminRole.RoleId });
-            db.Users.Add(new User { UserName = "staff", Password = "staff", DisplayName = "Staff", RoleId = staffRole.RoleId });
-            await db.SaveChangesAsync();
-        }
     }
 
     // ═══════════════════════════════════════════════════════════════════
