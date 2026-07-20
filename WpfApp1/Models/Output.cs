@@ -1,13 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RalseiWarehouse.Models;
 
-public partial class Output
+/// <summary>
+/// Represents an export (stock-out) receipt header.
+/// </summary>
+[Table("Output")]
+public class Output
 {
+    /// <summary>Gets or sets the unique identifier of the export receipt.</summary>
+    [Key]
+    [MaxLength(128)]
     public string OutputId { get; set; } = null!;
 
+    /// <summary>Gets or sets the date and time of the export.</summary>
     public DateTime? DateOutput { get; set; }
 
-    public virtual ICollection<OutputInfo> OutputInfos { get; set; } = new List<OutputInfo>();
+    /// <summary>Gets or sets the line items of this export receipt.</summary>
+    public ICollection<OutputInfo> OutputInfos { get; set; } = new List<OutputInfo>();
 }
