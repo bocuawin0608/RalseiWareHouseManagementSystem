@@ -248,26 +248,39 @@ public class WarehouseService
             .ToListAsync();
     }
 
-    /// <summary>Creates or updates a product.</summary>
+    /// <summary>Creates or updates a product. New products get an auto-generated ID.</summary>
     public async Task SaveProductAsync(Product product)
     {
         ArgumentNullException.ThrowIfNull(product);
-        if (string.IsNullOrWhiteSpace(product.Id))
-            throw new ArgumentException("Product ID is required.", nameof(product));
         if (string.IsNullOrWhiteSpace(product.DisplayName))
             throw new ArgumentException("Product name is required.", nameof(product));
 
         await using var db = CreateDb();
-        var existing = await db.Objects.FindAsync(product.Id);
-        if (existing is null)
+
+        if (string.IsNullOrWhiteSpace(product.Id))
+        {
+            var allIds = await db.Objects.Select(o => o.Id).ToListAsync();
+            var maxNum = allIds
+                .Where(id => id.StartsWith("P") && id.Length > 1)
+                .Select(id => int.TryParse(id.Substring(1), out var n) ? n : 0)
+                .DefaultIfEmpty(0)
+                .Max();
+            product.Id = $"P{maxNum + 1:D4}";
             db.Objects.Add(product);
+        }
         else
         {
-            existing.DisplayName = product.DisplayName;
-            existing.UnitId = product.UnitId;
-            existing.SupplierId = product.SupplierId;
-            existing.QRCode = product.QRCode;
-            existing.BarCode = product.BarCode;
+            var existing = await db.Objects.FindAsync(product.Id);
+            if (existing is null)
+                db.Objects.Add(product);
+            else
+            {
+                existing.DisplayName = product.DisplayName;
+                existing.UnitId = product.UnitId;
+                existing.SupplierId = product.SupplierId;
+                existing.QRCode = product.QRCode;
+                existing.BarCode = product.BarCode;
+            }
         }
         await db.SaveChangesAsync();
     }

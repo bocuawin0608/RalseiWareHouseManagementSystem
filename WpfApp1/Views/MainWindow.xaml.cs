@@ -224,7 +224,6 @@ public partial class MainWindow : Window
     {
         _selectedProduct = dgProducts.SelectedItem as Product;
         if (_selectedProduct is null) return;
-        txtProductId.Text = _selectedProduct.Id;
         txtProductName.Text = _selectedProduct.DisplayName ?? "";
         cboProductUnit.SelectedValue = _selectedProduct.UnitId;
         cboProductSupplier.SelectedValue = _selectedProduct.SupplierId;
@@ -234,22 +233,19 @@ public partial class MainWindow : Window
     private void BtnNewProduct_Click(object sender, RoutedEventArgs e)
     {
         _selectedProduct = null;
-        txtProductId.Text = txtProductName.Text = txtProductQR.Text = txtProductBarcode.Text = "";
+        txtProductName.Text = txtProductQR.Text = txtProductBarcode.Text = "";
         cboProductUnit.SelectedIndex = cboProductSupplier.SelectedIndex = -1;
     }
     private async void BtnSaveProduct_Click(object sender, RoutedEventArgs e)
     {
         try
         {
-            var id = txtProductId.Text.Trim();
             var name = txtProductName.Text.Trim();
-            if (string.IsNullOrWhiteSpace(id)) { MessageBox.Show("Product ID is required."); return; }
             if (string.IsNullOrWhiteSpace(name)) { MessageBox.Show("Product name is required."); return; }
             if (cboProductUnit.SelectedValue is not int uid || uid < 1) { MessageBox.Show("Select a unit."); return; }
             if (cboProductSupplier.SelectedValue is not int sid || sid < 1) { MessageBox.Show("Select a supplier."); return; }
 
             var p = _selectedProduct ?? new Product();
-            p.Id = id;
             p.DisplayName = name;
             p.UnitId = uid;
             p.SupplierId = sid;

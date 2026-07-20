@@ -146,7 +146,6 @@
                             <DataGrid x:Name="dgProducts" AutoGenerateColumns="False" IsReadOnly="True"
                                       SelectionMode="Single" SelectionChanged="DgProducts_SelectionChanged">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="80"/>
                                     <DataGridTextColumn Header="Name" Binding="{Binding DisplayName}" Width="*"/>
                                     <DataGridTextColumn Header="Unit" Binding="{Binding Unit.DisplayName}" Width="80"/>
                                     <DataGridTextColumn Header="Supplier" Binding="{Binding Supplier.DisplayName}" Width="*"/>
@@ -154,8 +153,6 @@
                             </DataGrid>
                             <ScrollViewer Grid.Column="2" Margin="8,0,0,0">
                                 <StackPanel>
-                                    <TextBlock Text="Product ID" FontWeight="SemiBold" Margin="0,0,0,2"/>
-                                    <TextBox x:Name="txtProductId" Height="26" Margin="0,0,0,6"/>
                                     <TextBlock Text="Name" FontWeight="SemiBold" Margin="0,0,0,2"/>
                                     <TextBox x:Name="txtProductName" Height="26" Margin="0,0,0,6"/>
                                     <TextBlock Text="Unit" FontWeight="SemiBold" Margin="0,0,0,2"/>
