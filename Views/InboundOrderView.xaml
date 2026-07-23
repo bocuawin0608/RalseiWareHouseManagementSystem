@@ -1,0 +1,90 @@
+<UserControl x:Class="RalseiWarehouse_v2.Views.InboundOrderView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- create order -->
+        <GroupBox Grid.Row="0" Header="New inbound order" Padding="10" Margin="0,0,0,10">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="220"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="220"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Row="0" Grid.Column="0" Content="Order No"/>
+                <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtOrderNo" Margin="4" Height="24"/>
+
+                <Label Grid.Row="0" Grid.Column="2" Content="Supplier"/>
+                <ComboBox Grid.Row="0" Grid.Column="3" x:Name="cboSupplier" Margin="4" Height="24"
+                          DisplayMemberPath="DisplayName" SelectedValuePath="Id"/>
+
+                <Label Grid.Row="1" Grid.Column="0" Content="Window start"/>
+                <DatePicker Grid.Row="1" Grid.Column="1" x:Name="dtpStart" Margin="4" Height="24"/>
+
+                <Label Grid.Row="1" Grid.Column="2" Content="Window end"/>
+                <DatePicker Grid.Row="1" Grid.Column="3" x:Name="dtpEnd" Margin="4" Height="24"/>
+
+                <Label Grid.Row="2" Grid.Column="0" Content="Note"/>
+                <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" x:Name="txtNote" Margin="4" Height="24"/>
+
+                <!-- add line -->
+                <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="5" Orientation="Horizontal" Margin="0,10,0,0">
+                    <Label Content="Product"/>
+                    <ComboBox x:Name="cboProduct" Width="220" Height="24" Margin="4"
+                              DisplayMemberPath="DisplayName" SelectedValuePath="Id"/>
+                    <Label Content="Unit"/>
+                    <ComboBox x:Name="cboUnit" Width="90" Height="24" Margin="4"
+                              DisplayMemberPath="DisplayName" SelectedValuePath="Id"/>
+                    <Label Content="Qty"/>
+                    <TextBox x:Name="txtQty" Width="70" Height="24" Margin="4"/>
+                    <Label Content="Price"/>
+                    <TextBox x:Name="txtPrice" Width="80" Height="24" Margin="4"/>
+                    <Button x:Name="btnAddLine" Content="Add line" Width="90" Height="26" Margin="8,0,0,0"
+                            Click="btnAddLine_Click"/>
+                    <Button x:Name="btnCreate" Content="Create order" Width="110" Height="26" Margin="16,0,0,0"
+                            FontWeight="Bold" Click="btnCreate_Click"/>
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+
+        <!-- pending lines -->
+        <GroupBox Grid.Row="1" Header="Lines to save" Padding="6" Margin="0,0,0,10">
+            <DataGrid x:Name="dgPending" Height="110" AutoGenerateColumns="True" IsReadOnly="True"/>
+        </GroupBox>
+
+        <!-- existing orders -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <GroupBox Grid.Column="0" Header="Inbound orders" Padding="6" Margin="0,0,6,0">
+                <DockPanel>
+                    <Button x:Name="btnRefresh" Content="Refresh" DockPanel.Dock="Top"
+                            Height="26" Margin="0,0,0,6" Click="btnRefresh_Click"/>
+                    <DataGrid x:Name="dgOrders" AutoGenerateColumns="True" IsReadOnly="True"
+                              SelectionMode="Single" SelectionChanged="dgOrders_SelectionChanged"/>
+                </DockPanel>
+            </GroupBox>
+
+            <GroupBox Grid.Column="1" Header="Lines of selected order (Received vs Ordered)" Padding="6" Margin="6,0,0,0">
+                <DataGrid x:Name="dgLines" AutoGenerateColumns="True" IsReadOnly="True"/>
+            </GroupBox>
+        </Grid>
+    </Grid>
+</UserControl>

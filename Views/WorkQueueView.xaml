@@ -1,0 +1,62 @@
+<UserControl x:Class="RalseiWarehouse_v2.Views.WorkQueueView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0" Margin="0,0,0,8">
+            <TextBlock Text="Work Queue" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button x:Name="btnRefresh" Content="Refresh" Width="90" Height="26" Margin="4,0"
+                        Click="btnRefresh_Click"/>
+                <Button x:Name="btnAssign" Content="Assign to me" Width="110" Height="26" Margin="4,0"
+                        Click="btnAssign_Click"/>
+                <Button x:Name="btnStart" Content="Start" Width="80" Height="26" Margin="4,0"
+                        Click="btnStart_Click"/>
+                <Button x:Name="btnCancel" Content="Cancel task" Width="100" Height="26" Margin="4,0"
+                        Click="btnCancel_Click"/>
+            </StackPanel>
+
+            <!-- Admin-only: assign to a specific worker -->
+            <StackPanel x:Name="panelAdminAssign" Orientation="Horizontal" Visibility="Collapsed"
+                        HorizontalAlignment="Right" Margin="8,0,0,0">
+                <Label Content="Worker" VerticalAlignment="Center"/>
+                <ComboBox x:Name="cboWorker" Width="140" Height="26" Margin="4,0"
+                          DisplayMemberPath="DisplayName" SelectedValuePath="Id"/>
+                <Button x:Name="btnAssignToWorker" Content="Assign" Width="80" Height="26" Margin="4,0"
+                        Click="btnAssignToWorker_Click"/>
+            </StackPanel>
+        </DockPanel>
+
+        <DataGrid Grid.Row="1" x:Name="dgTasks" AutoGenerateColumns="True" IsReadOnly="True"
+                  SelectionMode="Single" SelectionChanged="dgTasks_SelectionChanged"/>
+
+        <!-- execution panel: fields light up depending on the selected task type -->
+        <GroupBox Grid.Row="2" Header="Execute selected task" Padding="10" Margin="0,10,0,0">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <Label Content="Qty"/>
+                <TextBox x:Name="txtQty" Width="70" Height="24" Margin="4"/>
+
+                <Label Content="Lot" Margin="16,0,0,0"/>
+                <TextBox x:Name="txtLot" Width="100" Height="24" Margin="4"/>
+
+                <Label Content="Expiry" Margin="16,0,0,0"/>
+                <DatePicker x:Name="dtpExpiry" Width="120" Height="24" Margin="4"/>
+
+                <Label Content="Pallet/HU" Margin="16,0,0,0"/>
+                <TextBox x:Name="txtHandlingUnit" Width="100" Height="24" Margin="4"/>
+
+                <Label Content="Destination" Margin="16,0,0,0"/>
+                <ComboBox x:Name="cboDestination" Width="110" Height="24" Margin="4"
+                          DisplayMemberPath="DisplayName" SelectedValuePath="Id"/>
+
+                <Button x:Name="btnExecute" Content="Execute" Width="120" Height="28" Margin="24,0,0,0"
+                        FontWeight="Bold" Click="btnExecute_Click"/>
+            </StackPanel>
+        </GroupBox>
+    </Grid>
+</UserControl>

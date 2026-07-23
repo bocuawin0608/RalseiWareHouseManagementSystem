@@ -1,0 +1,38 @@
+﻿<Window x:Class="RalseiWarehouse_v2.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Ralsei Warehouse Management" Height="720" Width="1180"
+        WindowStartupLocation="CenterScreen">
+    <DockPanel>
+        <!-- header -->
+        <Border DockPanel.Dock="Top" Background="#2E3B4E" Padding="14,10">
+            <DockPanel>
+                <TextBlock x:Name="txtTitle" Text="Ralsei Warehouse" Foreground="White"
+                           FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock x:Name="txtUser" Foreground="#CFE0F1" VerticalAlignment="Center"
+                               Margin="0,0,16,0"/>
+                    <Button x:Name="btnLogout" Content="Logout" Width="80" Height="26"
+                            Click="btnLogout_Click"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- nav -->
+        <Border DockPanel.Dock="Left" Background="#F0F2F5" BorderBrush="#D0D4D9" BorderThickness="0,0,1,0">
+            <StackPanel Width="170">
+                <Button x:Name="btnNavWorkQueue" Content="Work Queue" Height="40" Margin="8,12,8,4"
+                        Click="btnNavWorkQueue_Click"/>
+                <Button x:Name="btnNavInbound" Content="Inbound Orders" Height="40" Margin="8,4"
+                        Click="btnNavInbound_Click"/>
+                <Button x:Name="btnNavOutbound" Content="Outbound Orders" Height="40" Margin="8,4"
+                        Click="btnNavOutbound_Click"/>
+                <Button x:Name="btnNavExceptions" Content="Exceptions" Height="40" Margin="8,4"
+                        Click="btnNavExceptions_Click"/>
+            </StackPanel>
+        </Border>
+
+        <!-- current view -->
+        <ContentControl x:Name="ViewHost"/>
+    </DockPanel>
+</Window>

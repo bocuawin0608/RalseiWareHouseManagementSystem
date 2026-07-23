@@ -1,0 +1,25 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+*.sln.docstates
+.vs/
+*.cache
+*.cacheitems
+*.dgml
+*.FeatureFlags
+*.log
+*.nupkg
+*.tmp
+packages/
+
+## WPF
+*.baml
+*.g.cs
+*.g.i.cs
+
+## IDE
+.idea/
+*.swp
+*~
