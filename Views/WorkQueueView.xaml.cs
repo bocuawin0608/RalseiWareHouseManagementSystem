@@ -142,7 +142,12 @@ public partial class WorkQueueView : UserControl
         }
     }
 
-    private void RefreshTasks() => dgTasks.ItemsSource = _controller.GetOpenTasks();
+    private void RefreshTasks()
+    {
+        var (tasks, totalInDb, openCount) = _controller.GetOpenTasks();
+        dgTasks.ItemsSource = tasks;
+        txtCount.Text = $"({tasks.Count} shown · {openCount} open · {totalInDb} total in DB)";
+    }
 
     private void ClearInputs()
     {

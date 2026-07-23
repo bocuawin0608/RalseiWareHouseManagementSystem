@@ -18,7 +18,7 @@ public class WorkQueueController
 
     public WorkQueueController(UserSession session) => _session = session;
 
-    public List<WorkTaskItem> GetOpenTasks()
+    public (List<WorkTaskItem> Tasks, int TotalInDb, int OpenCount) GetOpenTasks()
     {
         using var db = new WarehouseDbContext();
         var products = db.Products.ToDictionary(p => p.ProductId, p => p.DisplayName);
@@ -26,6 +26,9 @@ public class WorkQueueController
         var workers = db.Accounts.ToDictionary(a => a.AccountId, a => a.DisplayName);
         var stocks = db.Stocks.ToDictionary(s => s.StockId);
         var lines = db.OrderLines.ToDictionary(l => l.OrderLineId);
+
+        int totalInDb = db.WorkTasks.Count();
+        int openCount = db.WorkTasks.Count(t => t.Status == WmsStatus.Task.Open);
 
         var tasks = db.WorkTasks
             .Where(t => t.Status == WmsStatus.Task.Open
@@ -35,7 +38,7 @@ public class WorkQueueController
             .ThenBy(t => t.CreatedAt)
             .ToList();
 
-        return tasks.Select(t => new WorkTaskItem
+        return (tasks.Select(t => new WorkTaskItem
         {
             TaskId = t.TaskId,
             TaskType = t.TaskType,
@@ -44,7 +47,7 @@ public class WorkQueueController
             Info = BuildInfo(t, lines, stocks, products, locations),
             AssignedToName = t.AssignedTo.HasValue ? workers.GetValueOrDefault(t.AssignedTo.Value, "?") : null,
             CreatedAt = t.CreatedAt
-        }).ToList();
+        }).ToList(), totalInDb, openCount);
     }
 
     public List<LookupItem> GetStorageLocations()
